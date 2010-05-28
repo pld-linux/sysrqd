@@ -2,7 +2,7 @@
 #
 # sysrqd		sysrqd
 #
-# chkconfig:	345 01 99
+# chkconfig:	345 11 09
 #
 # description:	sysrqd
 
