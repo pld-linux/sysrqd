@@ -1,0 +1,74 @@
+#!/bin/sh
+#
+# sysrqd		sysrqd
+#
+# chkconfig:	345 01 99
+#
+# description:	sysrqd
+
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Get network config
+. /etc/sysconfig/network
+
+# Get service config
+[ -f /etc/sysconfig/sysrqd ] && . /etc/sysconfig/sysrqd
+
+# Check that networking is up.
+if is_yes "${NETWORKING}"; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status -a "$1" != init ]; then
+		msg_network_down "sysrqd"
+		exit 1
+	fi
+else
+	exit 0
+fi
+
+start() {
+	# Check if the service is already running?
+	if [ -f /var/lock/subsys/sysrqd ]; then
+		msg_already_running "sysrqd"
+		return
+	fi
+
+	msg_starting "sysrqd"
+	daemon /usr/sbin/sysrqd
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && touch /var/lock/subsys/sysrqd
+}
+
+stop() {
+	if [ -f /var/lock/subsys/sysrqd ]; then
+		msg_stopping "sysrqd"
+		killproc sysrqd -TERM
+		rm -f /var/lock/subsys/sysrqd >/dev/null 2>&1
+	else
+		msg_not_running "sysrqd"
+	fi
+}
+
+RETVAL=0
+# See how we were called.
+case "$1" in
+  start)
+  	start
+	;;
+  stop)
+  	stop
+	;;
+  restart)
+	stop
+	start
+	;;
+  status)
+	status sysrqd
+	exit $?
+	;;
+  *)
+	msg_usage "$0 {start|stop|init|restart|status}"
+	exit 3
+esac
+
+exit $RETVAL
