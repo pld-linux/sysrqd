@@ -19,17 +19,16 @@ somehow reliable. Authentication is made by clear password.
 
 %build
 %{__make} \
-	CC="%{__cc}"
+	CC="%{__cc}" \
+	CFLAGS="%{rpmcflags}"
 
 %install
 rm -rf $RPM_BUILD_ROOT
-
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d
-
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
-install %{SOURCE1} $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/sysrqd
+install -d $RPM_BUILD_ROOT/etc/rc.d/init.d
+install -p %{SOURCE1} $RPM_BUILD_ROOT/etc/rc.d/init.d/sysrqd
 
 :> $RPM_BUILD_ROOT%{_sysconfdir}/sysrqd.secret
 echo 0.0.0.0 > $RPM_BUILD_ROOT%{_sysconfdir}/sysrqd.bind
