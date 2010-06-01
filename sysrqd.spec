@@ -1,7 +1,7 @@
 Summary:	Linux SysRq over network daemon
 Name:		sysrqd
 Version:	13
-Release:	1
+Release:	2
 License:	GPL v2+
 Group:		Applications/Networking
 Source0:	http://julien.danjou.info/sysrqd/%{name}-%{version}.tar.xz
