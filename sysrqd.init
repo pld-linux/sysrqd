@@ -4,8 +4,9 @@
 #
 # chkconfig:	345 11 09
 #
-# description:	sysrqd
-
+# description:	Linux SysRq over network daemon
+#
+# $Id$
 
 # Source function library
 . /etc/rc.d/init.d/functions
@@ -18,7 +19,7 @@
 
 # Check that networking is up.
 if is_yes "${NETWORKING}"; then
-	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status -a "$1" != init ]; then
+	if [ ! -f /var/lock/subsys/network -a "$1" != stop -a "$1" != status ]; then
 		msg_network_down "sysrqd"
 		exit 1
 	fi
@@ -40,13 +41,25 @@ start() {
 }
 
 stop() {
-	if [ -f /var/lock/subsys/sysrqd ]; then
-		msg_stopping "sysrqd"
-		killproc sysrqd -TERM
-		rm -f /var/lock/subsys/sysrqd >/dev/null 2>&1
-	else
+	if [ ! -f /var/lock/subsys/sysrqd ]; then
 		msg_not_running "sysrqd"
+		return
 	fi
+
+	msg_stopping "sysrqd"
+	killproc sysrqd -TERM
+	rm -f /var/lock/subsys/sysrqd >/dev/null 2>&1
+}
+
+condrestart() {
+	if [ ! -f /var/lock/subsys/sysrqd ]; then
+		msg_not_running "sysrqd"
+		RETVAL=$1
+		return
+	fi
+
+	stop
+	start
 }
 
 RETVAL=0
@@ -62,12 +75,18 @@ case "$1" in
 	stop
 	start
 	;;
+  try-restart)
+	condrestart 0
+	;;
+  force-reload)
+	condrestart 7
+	;;
   status)
 	status sysrqd
 	exit $?
 	;;
   *)
-	msg_usage "$0 {start|stop|init|restart|status}"
+	msg_usage "$0 {start|stop|restart|try-restart|force-reload|status}"
 	exit 3
 esac
 
