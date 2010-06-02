@@ -8,6 +8,7 @@ Source0:	http://julien.danjou.info/sysrqd/%{name}-%{version}.tar.xz
 # Source0-md5:	0d7b17acc32679aba16d19f140e04f39
 Source1:	%{name}.init
 BuildRequires:	tar >= 1:1.22
+BuildRequires:	xz
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
